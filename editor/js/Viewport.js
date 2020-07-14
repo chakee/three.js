@@ -12,6 +12,7 @@ import { EditorControls } from './EditorControls.js';
 
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
+import { ViewHelper } from './Viewport.ViewHelper.js';
 
 import { SetPositionCommand } from './commands/SetPositionCommand.js';
 import { SetRotationCommand } from './commands/SetRotationCommand.js';
@@ -55,6 +56,10 @@ function Viewport( editor ) {
 		}
 
 	}
+
+	//
+
+	var viewHelper = new ViewHelper( camera, container );
 
 	//
 
@@ -159,6 +164,13 @@ function Viewport( editor ) {
 	var mouse = new THREE.Vector2();
 
 	// events
+
+	function updateAspectRatio() {
+
+		camera.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
+		camera.updateProjectionMatrix();
+
+	}
 
 	function getIntersects( point, objects ) {
 
@@ -292,6 +304,7 @@ function Viewport( editor ) {
 		signals.refreshSidebarObject3D.dispatch( camera );
 
 	} );
+	viewHelper.controls = controls;
 
 	// signals
 
@@ -633,23 +646,24 @@ function Viewport( editor ) {
 
 	} );
 
-	signals.viewportCameraChanged.add( function ( viewportCamera ) {
+	signals.viewportCameraChanged.add( function () {
+
+		var viewportCamera = editor.viewportCamera;
 
 		if ( viewportCamera.isPerspectiveCamera ) {
 
 			viewportCamera.aspect = editor.camera.aspect;
 			viewportCamera.projectionMatrix.copy( editor.camera.projectionMatrix );
 
-		} else if ( ! viewportCamera.isOrthographicCamera ) {
+		} else if ( viewportCamera.isOrthographicCamera ) {
 
-			throw "Invalid camera set as viewport";
+			// TODO
 
 		}
 
-		// Disable EditorControls when setting a user camera
-		controls.enabled = viewportCamera === editor.camera;
+		// disable EditorControls when setting a user camera
 
-		camera = viewportCamera;
+		controls.enabled = ( viewportCamera === editor.camera );
 
 		render();
 
@@ -659,13 +673,7 @@ function Viewport( editor ) {
 
 	signals.windowResize.add( function () {
 
-		// TODO: Move this out?
-
-		editor.DEFAULT_CAMERA.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
-		editor.DEFAULT_CAMERA.updateProjectionMatrix();
-
-		camera.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
-		camera.updateProjectionMatrix();
+		updateAspectRatio();
 
 		renderer.setSize( container.dom.offsetWidth, container.dom.offsetHeight );
 
@@ -680,6 +688,8 @@ function Viewport( editor ) {
 
 	} );
 
+	signals.cameraResetted.add( updateAspectRatio );
+
 	// animations
 
 	var clock = new THREE.Clock(); // only used for animations
@@ -689,13 +699,25 @@ function Viewport( editor ) {
 		requestAnimationFrame( animate );
 
 		var mixer = editor.mixer;
+		var delta = clock.getDelta();
+
+		var needsUpdate = false;
 
 		if ( mixer.stats.actions.inUse > 0 ) {
 
-			mixer.update( clock.getDelta() );
-			render();
+			mixer.update( delta );
+			needsUpdate = true;
 
 		}
+
+		if ( viewHelper.animating === true ) {
+
+			viewHelper.update( delta );
+			needsUpdate = true;
+
+		}
+
+		if ( needsUpdate === true ) render();
 
 	}
 
@@ -714,13 +736,15 @@ function Viewport( editor ) {
 		// don't render under the grid.
 
 		scene.add( grid );
-		renderer.render( scene, camera );
+		renderer.setViewport( 0, 0, container.dom.offsetWidth, container.dom.offsetHeight );
+		renderer.render( scene, editor.viewportCamera );
 		scene.remove( grid );
 
-		if ( camera === editor.camera ) {
+		if ( camera === editor.viewportCamera ) {
 
 			renderer.autoClear = false;
 			renderer.render( sceneHelpers, camera );
+			viewHelper.render( renderer );
 			renderer.autoClear = true;
 
 		}
