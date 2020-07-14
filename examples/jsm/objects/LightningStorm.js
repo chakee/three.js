@@ -37,7 +37,7 @@
  *
  * @param {Object} lightningParameters The parameters for created rays. See LightningStrike (geometry)
  *
- * @param {Material} lightningMaterial The Material used for the created rays.
+ * @param {Material} lightningMaterial The THREE.Material used for the created rays.
  *
  * @param {function} onRayPosition Optional callback with two Vector3 parameters (source, dest). You can set here the start and end points for each created ray, using the standard size, minHeight, etc parameters and other values in your algorithm.
  *
@@ -47,8 +47,7 @@
 */
 
 import {
-	Material,
-	Math as _Math,
+	MathUtils,
 	Mesh,
 	MeshBasicMaterial,
 	Object3D
@@ -93,7 +92,7 @@ var LightningStorm = function ( stormParams ) {
 
 			dest.set( ( Math.random() - 0.5 ) * stormParams.size, 0, ( Math.random() - 0.5 ) * stormParams.size );
 
-			var height = _Math.lerp( stormParams.minHeight, stormParams.maxHeight, Math.random() );
+			var height = MathUtils.lerp( stormParams.minHeight, stormParams.maxHeight, Math.random() );
 
 			source.set( stormParams.maxSlope * ( 2 * Math.random() - 1 ), 1, stormParams.maxSlope * ( 2 * Math.random() - 1 ) ).multiplyScalar( height ).add( dest );
 
@@ -146,7 +145,7 @@ LightningStorm.prototype.update = function ( time ) {
 			var lightningParams1 = LightningStrike.copyParameters( lightningMesh.geometry.rayParameters, this.lightningParameters );
 
 			lightningParams1.birthTime = time;
-			lightningParams1.deathTime = time + _Math.lerp( this.stormParams.lightningMinDuration, this.stormParams.lightningMaxDuration, Math.random() );
+			lightningParams1.deathTime = time + MathUtils.lerp( this.stormParams.lightningMinDuration, this.stormParams.lightningMaxDuration, Math.random() );
 
 			this.onRayPosition( lightningParams1.sourceOffset, lightningParams1.destOffset );
 
@@ -209,7 +208,7 @@ LightningStorm.prototype.update = function ( time ) {
 
 LightningStorm.prototype.getNextLightningTime = function ( currentTime ) {
 
-	return currentTime + _Math.lerp( this.stormParams.lightningMinPeriod, this.stormParams.lightningMaxPeriod, Math.random() ) / ( this.stormParams.maxLightnings + 1 );
+	return currentTime + MathUtils.lerp( this.stormParams.lightningMinPeriod, this.stormParams.lightningMaxPeriod, Math.random() ) / ( this.stormParams.maxLightnings + 1 );
 
 };
 

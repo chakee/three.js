@@ -7,7 +7,7 @@
  * Usage
  *
  * var myRay = new LightningStrike( paramsObject );
- * var myRayMesh = new Mesh( myRay, myMaterial );
+ * var myRayMesh = new THREE.Mesh( myRay, myMaterial );
  * scene.add( myRayMesh );
  * ...
  * myRay.update( currentTime );
@@ -103,9 +103,9 @@
 
 import {
 	BufferGeometry,
+	DynamicDrawUsage,
 	Float32BufferAttribute,
-	Math as _Math,
-	Mesh,
+	MathUtils,
 	Uint32BufferAttribute,
 	Vector3
 } from "../../../build/three.module.js";
@@ -429,22 +429,22 @@ LightningStrike.prototype.createMesh = function () {
 	this.setIndex( new Uint32BufferAttribute( this.indices, 1 ) );
 
 	this.positionAttribute = new Float32BufferAttribute( this.vertices, 3 );
-	this.addAttribute( 'position', this.positionAttribute );
+	this.setAttribute( 'position', this.positionAttribute );
 
 	if ( this.generateUVs ) {
 
 		this.uvsAttribute = new Float32BufferAttribute( new Float32Array( this.uvs ), 2 );
-		this.addAttribute( 'uv', this.uvsAttribute );
+		this.setAttribute( 'uv', this.uvsAttribute );
 
 	}
 
 	if ( ! this.isStatic ) {
 
-		this.index.dynamic = true;
-		this.positionAttribute.dynamic = true;
+		this.index.usage = DynamicDrawUsage;
+		this.positionAttribute.usage = DynamicDrawUsage;
 		if ( this.generateUVs ) {
 
-			this.uvsAttribute.dynamic = true;
+			this.uvsAttribute.usage = DynamicDrawUsage;
 
 		}
 
@@ -542,7 +542,7 @@ LightningStrike.prototype.fillMesh = function ( time ) {
 
 };
 
-LightningStrike.prototype.addNewSubray = function ( rayParameters ) {
+LightningStrike.prototype.addNewSubray = function ( /*rayParameters*/ ) {
 
 	return this.subrays[ this.numSubrays ++ ];
 
@@ -587,8 +587,8 @@ LightningStrike.prototype.fractalRay = function ( time, segmentCallback ) {
 
 		this.randomGenerator.setSeed( subray.seed );
 
-		subray.endPropagationTime = _Math.lerp( subray.birthTime, subray.deathTime, subray.propagationTimeFactor );
-		subray.beginVanishingTime = _Math.lerp( subray.deathTime, subray.birthTime, 1 - subray.vanishingTimeFactor );
+		subray.endPropagationTime = MathUtils.lerp( subray.birthTime, subray.deathTime, subray.propagationTimeFactor );
+		subray.beginVanishingTime = MathUtils.lerp( subray.deathTime, subray.birthTime, 1 - subray.vanishingTimeFactor );
 
 		var random1 = this.randomGenerator.random;
 		subray.linPos0.set( random1(), random1(), random1() ).multiplyScalar( 1000 );
@@ -794,7 +794,7 @@ LightningStrike.prototype.createTriangleVerticesWithUVs = function ( pos, up, fo
 
 };
 
-LightningStrike.prototype.createPrismFaces = function ( vertex, index ) {
+LightningStrike.prototype.createPrismFaces = function ( vertex/*, index*/ ) {
 
 	var indices = this.indices;
 	var vertex = this.currentVertex - 6;
@@ -833,7 +833,7 @@ LightningStrike.prototype.createDefaultSubrayCreationCallbacks = function () {
 		var period = lightningStrike.rayParameters.subrayPeriod;
 		var dutyCycle = lightningStrike.rayParameters.subrayDutyCycle;
 
-		var phase0 = ( lightningStrike.rayParameters.isEternal && subray.recursion == 0 ) ? - random1() * period : _Math.lerp( subray.birthTime, subray.endPropagationTime, segment.fraction0 ) - random1() * period;
+		var phase0 = ( lightningStrike.rayParameters.isEternal && subray.recursion == 0 ) ? - random1() * period : MathUtils.lerp( subray.birthTime, subray.endPropagationTime, segment.fraction0 ) - random1() * period;
 
 		var phase = lightningStrike.time - phase0;
 		var currentCycle = Math.floor( phase / period );
@@ -841,7 +841,7 @@ LightningStrike.prototype.createDefaultSubrayCreationCallbacks = function () {
 		var childSubraySeed = random1() * ( currentCycle + 1 );
 
 		var isActive = phase % period <= dutyCycle * period;
-		
+
 		var probability = 0;
 
 		if ( isActive ) {

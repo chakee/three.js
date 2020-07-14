@@ -29,9 +29,7 @@ export class Camera extends Object3D {
 	 */
 	projectionMatrixInverse: Matrix4;
 
-	isCamera: true;
-
-	copy( source: Camera, recursive?: boolean ): this;
+	readonly isCamera: true;
 
 	getWorldDirection( target: Vector3 ): Vector3;
 

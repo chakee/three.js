@@ -1,3 +1,4 @@
+console.warn( "THREE.VolumeSlice: As part of the transition to ES6 Modules, the files in 'examples/js' were deprecated in May 2020 (r117) and will be deleted in December 2020 (r124). You can find more information about developing using ES6 Modules in https://threejs.org/docs/index.html#manual/en/introduction/Import-via-modules." );
 /**
  * This class has been made to hold a slice of a volume data
  * @class
@@ -62,6 +63,7 @@ THREE.VolumeSlice = function ( volume, index, axis ) {
 	 * @member {THREE.Mesh} mesh The mesh ready to get used in the scene
 	 */
 	this.mesh = new THREE.Mesh( this.geometry, material );
+	this.mesh.matrixAutoUpdate = false;
 	/**
 	 * @member {Boolean} geometryNeedsUpdate If set to true, updateGeometry will be triggered at the next repaint
 	 */
@@ -168,6 +170,7 @@ THREE.VolumeSlice.prototype = {
 			}
 
 		}
+
 		ctx.putImageData( imgData, 0, 0 );
 		this.ctx.drawImage( canvas, 0, 0, iLength, jLength, 0, 0, this.canvas.width, this.canvas.height );
 
@@ -205,7 +208,7 @@ THREE.VolumeSlice.prototype = {
 			this.mesh.geometry = this.geometry;
 			//reset mesh matrix
 			this.mesh.matrix.identity();
-			this.mesh.applyMatrix( this.matrix );
+			this.mesh.applyMatrix4( this.matrix );
 
 		}
 

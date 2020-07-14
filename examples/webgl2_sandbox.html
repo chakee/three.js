@@ -8,15 +8,14 @@
 	</head>
 
 	<body>
-		<div id="info"><a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl2 sandbox</div>
-
-		<script src="js/WebGL.js"></script>
+		<div id="info"><a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl2 sandbox</div>
 
 		<script type="module">
 
 			import * as THREE from '../build/three.module.js';
 
 			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { WEBGL } from './jsm/WebGL.js';
 
 			if ( WEBGL.isWebGL2Available() === false ) {
 
@@ -63,10 +62,7 @@
 
 				}
 
-				var canvas = document.createElement( 'canvas' );
-				var context = canvas.getContext( 'webgl2' );
-
-				renderer = new THREE.WebGLRenderer( { canvas: canvas, context: context } );
+				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );

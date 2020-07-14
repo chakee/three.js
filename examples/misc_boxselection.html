@@ -25,7 +25,7 @@
 	<body>
 
 		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - box selection
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - box selection
 		</div>
 
 		<script type="module">
@@ -142,7 +142,7 @@
 
 				for ( var item of selectionBox.collection ) {
 
-					item.material.emissive = new THREE.Color( 0x000000 );
+					item.material.emissive.set( 0x000000 );
 
 				}
 
@@ -159,7 +159,7 @@
 
 					for ( var i = 0; i < selectionBox.collection.length; i ++ ) {
 
-						selectionBox.collection[ i ].material.emissive = new THREE.Color( 0x000000 );
+						selectionBox.collection[ i ].material.emissive.set( 0x000000 );
 
 					}
 
@@ -172,7 +172,7 @@
 
 					for ( var i = 0; i < allSelected.length; i ++ ) {
 
-						allSelected[ i ].material.emissive = new THREE.Color( 0x0000ff );
+						allSelected[ i ].material.emissive.set( 0xffffff );
 
 					}
 
@@ -191,7 +191,7 @@
 
 				for ( var i = 0; i < allSelected.length; i ++ ) {
 
-					allSelected[ i ].material.emissive = new THREE.Color( 0x0000ff );
+					allSelected[ i ].material.emissive.set( 0xffffff );
 
 				}
 

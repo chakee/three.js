@@ -8,11 +8,9 @@
 	</head>
 	<body>
 		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> collada loader - kinematics<br/>
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> collada loader - kinematics<br/>
 			robot from <a href="https://github.com/rdiankov/collada_robots" target="_blank" rel="noopener">collada robots</a>
 		</div>
-
-		<script src="js/libs/tween.min.js"></script>
 
 		<script type="module">
 
@@ -20,6 +18,7 @@
 
 			import Stats from './jsm/libs/stats.module.js';
 
+			import { TWEEN } from './jsm/libs/tween.module.min.js';
 			import { ColladaLoader } from './jsm/loaders/ColladaLoader.js';
 
 			var container, stats;
@@ -107,7 +106,7 @@
 
 			function setupTween() {
 
-				var duration = THREE.Math.randInt( 1000, 5000 );
+				var duration = THREE.MathUtils.randInt( 1000, 5000 );
 
 				var target = {};
 
@@ -125,7 +124,7 @@
 
 							tweenParameters[ prop ] = position;
 
-							target[ prop ] = THREE.Math.randInt( joint.limits.min, joint.limits.max );
+							target[ prop ] = THREE.MathUtils.randInt( joint.limits.min, joint.limits.max );
 
 						}
 
@@ -135,7 +134,7 @@
 
 				kinematicsTween = new TWEEN.Tween( tweenParameters ).to( target, duration ).easing( TWEEN.Easing.Quadratic.Out );
 
-				kinematicsTween.onUpdate( function () {
+				kinematicsTween.onUpdate( function ( object ) {
 
 					for ( var prop in kinematics.joints ) {
 
@@ -143,7 +142,7 @@
 
 							if ( ! kinematics.joints[ prop ].static ) {
 
-								kinematics.setJointValue( prop, this[ prop ] );
+								kinematics.setJointValue( prop, object[ prop ] );
 
 							}
 

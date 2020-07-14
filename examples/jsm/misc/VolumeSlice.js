@@ -72,6 +72,7 @@ var VolumeSlice = function ( volume, index, axis ) {
 	 * @member {Mesh} mesh The mesh ready to get used in the scene
 	 */
 	this.mesh = new Mesh( this.geometry, material );
+	this.mesh.matrixAutoUpdate = false;
 	/**
 	 * @member {Boolean} geometryNeedsUpdate If set to true, updateGeometry will be triggered at the next repaint
 	 */
@@ -178,6 +179,7 @@ VolumeSlice.prototype = {
 			}
 
 		}
+
 		ctx.putImageData( imgData, 0, 0 );
 		this.ctx.drawImage( canvas, 0, 0, iLength, jLength, 0, 0, this.canvas.width, this.canvas.height );
 
@@ -215,7 +217,7 @@ VolumeSlice.prototype = {
 			this.mesh.geometry = this.geometry;
 			//reset mesh matrix
 			this.mesh.matrix.identity();
-			this.mesh.applyMatrix( this.matrix );
+			this.mesh.applyMatrix4( this.matrix );
 
 		}
 

@@ -9,7 +9,7 @@
 	<body>
 
 		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl HDR (RGBE) texture loader example<br/>
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl HDR (RGBE) texture loader example<br/>
 			Image courtesy of <a href="http://www.pauldebevec.com/Research/HDR/" target="_blank" rel="noopener">Paul Debevec</a>.
 		</div>
 
@@ -39,7 +39,7 @@
 				renderer.toneMapping = THREE.ReinhardToneMapping;
 				renderer.toneMappingExposure = params.exposure;
 
-				renderer.gammaOutput = true;
+				renderer.outputEncoding = THREE.sRGBEncoding;
 
 				scene = new THREE.Scene();
 
@@ -48,7 +48,7 @@
 				camera = new THREE.OrthographicCamera( - aspect, aspect, 1, - 1, 0, 1 );
 
 				new RGBELoader()
-					.setType( THREE.UnsignedByteType ) // alt: FloatType, HalfFloatType
+					.setDataType( THREE.UnsignedByteType ) // alt: FloatType, HalfFloatType
 					.load( 'textures/memorial.hdr', function ( texture, textureData ) {
 
 						//console.log( textureData );

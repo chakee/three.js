@@ -1,8 +1,10 @@
+import { BufferAttribute } from './../core/BufferAttribute';
 import { Vector3 } from './Vector3';
 import { Object3D } from './../core/Object3D';
 import { Sphere } from './Sphere';
 import { Plane } from './Plane';
 import { Matrix4 } from './Matrix4';
+import { Triangle } from './Triangle';
 
 export class Box3 {
 
@@ -10,9 +12,11 @@ export class Box3 {
 
 	max: Vector3;
 	min: Vector3;
+	readonly isBox3: true;
 
 	set( min: Vector3, max: Vector3 ): this;
 	setFromArray( array: ArrayLike<number> ): this;
+	setFromBufferAttribute( bufferAttribute: BufferAttribute ): this;
 	setFromPoints( points: Vector3[] ): this;
 	setFromCenterAndSize( center: Vector3, size: Vector3 ): this;
 	setFromObject( object: Object3D ): this;
@@ -28,10 +32,11 @@ export class Box3 {
 	expandByObject( object: Object3D ): this;
 	containsPoint( point: Vector3 ): boolean;
 	containsBox( box: Box3 ): boolean;
-	getParameter( point: Vector3 ): Vector3;
+	getParameter( point: Vector3, target: Vector3 ): Vector3;
 	intersectsBox( box: Box3 ): boolean;
 	intersectsSphere( sphere: Sphere ): boolean;
 	intersectsPlane( plane: Plane ): boolean;
+	intersectsTriangle( triangle: Triangle ): boolean;
 	clampPoint( point: Vector3, target: Vector3 ): Vector3;
 	distanceToPoint( point: Vector3 ): number;
 	getBoundingSphere( target: Sphere ): Sphere;

@@ -9,7 +9,7 @@
 
 import {
 	LinearFilter,
-	LinearMipMapLinearFilter,
+	LinearMipmapLinearFilter,
 	MeshBasicMaterial,
 	NoBlending,
 	RGBAFormat,
@@ -206,11 +206,13 @@ AdaptiveToneMappingPass.prototype = Object.assign( Object.create( Pass.prototype
 			this.luminanceRT.dispose();
 
 		}
+
 		if ( this.currentLuminanceRT ) {
 
 			this.currentLuminanceRT.dispose();
 
 		}
+
 		if ( this.previousLuminanceRT ) {
 
 			this.previousLuminanceRT.dispose();
@@ -228,7 +230,7 @@ AdaptiveToneMappingPass.prototype = Object.assign( Object.create( Pass.prototype
 		this.previousLuminanceRT.texture.generateMipmaps = false;
 
 		// We only need mipmapping for the current luminosity because we want a down-sampled version to sample in our adaptive shader
-		pars.minFilter = LinearMipMapLinearFilter;
+		pars.minFilter = LinearMipmapLinearFilter;
 		pars.generateMipmaps = true;
 		this.currentLuminanceRT = new WebGLRenderTarget( this.resolution, this.resolution, pars );
 		this.currentLuminanceRT.texture.name = "AdaptiveToneMappingPass.cl";
@@ -239,6 +241,7 @@ AdaptiveToneMappingPass.prototype = Object.assign( Object.create( Pass.prototype
 			this.materialToneMap.uniforms.luminanceMap.value = this.luminanceRT.texture;
 
 		}
+
 		//Put something in the adaptive luminance texture so that the scene can render initially
 		this.fsQuad.material = new MeshBasicMaterial( { color: 0x777777 } );
 		this.materialLuminance.needsUpdate = true;
@@ -265,6 +268,7 @@ AdaptiveToneMappingPass.prototype = Object.assign( Object.create( Pass.prototype
 			this.materialToneMap.uniforms.luminanceMap.value = null;
 
 		}
+
 		this.materialToneMap.needsUpdate = true;
 
 	},
@@ -327,31 +331,37 @@ AdaptiveToneMappingPass.prototype = Object.assign( Object.create( Pass.prototype
 			this.luminanceRT.dispose();
 
 		}
+
 		if ( this.previousLuminanceRT ) {
 
 			this.previousLuminanceRT.dispose();
 
 		}
+
 		if ( this.currentLuminanceRT ) {
 
 			this.currentLuminanceRT.dispose();
 
 		}
+
 		if ( this.materialLuminance ) {
 
 			this.materialLuminance.dispose();
 
 		}
+
 		if ( this.materialAdaptiveLum ) {
 
 			this.materialAdaptiveLum.dispose();
 
 		}
+
 		if ( this.materialCopy ) {
 
 			this.materialCopy.dispose();
 
 		}
+
 		if ( this.materialToneMap ) {
 
 			this.materialToneMap.dispose();

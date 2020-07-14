@@ -9,7 +9,7 @@
 	<body>
 
 		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - <span id="waterSize"></span> webgl gpgpu water<br/>
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - <span id="waterSize"></span> webgl gpgpu water<br/>
 			Move mouse to disturb water.<br>
 			Press mouse button to orbit around. 'W' key toggles wireframe.
 		</div>
@@ -314,6 +314,8 @@
 				container.appendChild( renderer.domElement );
 
 				var controls = new OrbitControls( camera, renderer.domElement );
+				controls.minDistance = 100;
+				controls.maxDistance = 1000;
 
 				stats = new Stats();
 				container.appendChild( stats.dom );
@@ -520,7 +522,7 @@
 						var x = i * 128 / WIDTH;
 						var y = j * 128 / WIDTH;
 
-						pixels[ p + 0 ] = noise( x, y, 123.4 );
+						pixels[ p + 0 ] = noise( x, y );
 						pixels[ p + 1 ] = pixels[ p + 0 ];
 						pixels[ p + 2 ] = 0;
 						pixels[ p + 3 ] = 1;

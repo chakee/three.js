@@ -9,7 +9,8 @@ import {
 	BlendingSrcFactor,
 	DepthModes,
 	Side,
-	Colors,
+	StencilFunc,
+	StencilOp
 } from '../constants';
 
 // Materials //////////////////////////////////////////////////////////////////////////////////
@@ -28,14 +29,13 @@ export interface MaterialParameters {
 	clippingPlanes?: Plane[];
 	clipShadows?: boolean;
 	colorWrite?: boolean;
+	defines?: any;
 	depthFunc?: DepthModes;
 	depthTest?: boolean;
 	depthWrite?: boolean;
 	fog?: boolean;
-	lights?: boolean;
 	name?: string;
 	opacity?: number;
-	overdraw?: number;
 	polygonOffset?: boolean;
 	polygonOffsetFactor?: number;
 	polygonOffsetUnits?: number;
@@ -45,10 +45,17 @@ export interface MaterialParameters {
 	flatShading?: boolean;
 	side?: Side;
 	shadowSide?: Side;
+	toneMapped?: boolean;
 	transparent?: boolean;
-	vertexColors?: Colors;
-	vertexTangents?: boolean;
+	vertexColors?: boolean;
 	visible?: boolean;
+	stencilWrite?: boolean;
+	stencilFunc?: StencilFunc;
+	stencilRef?: number;
+	stencilMask?: number;
+	stencilFail?: StencilOp;
+	stencilZFail?: StencilOp;
+	stencilZPass?: StencilOp;
 }
 
 /**
@@ -119,6 +126,12 @@ export class Material extends EventDispatcher {
 	colorWrite: boolean;
 
 	/**
+	 * Custom defines to be injected into the shader. These are passed in form of an object literal, with key/value pairs. { MY_CUSTOM_DEFINE: '' , PI2: Math.PI * 2 }.
+	 * The pairs are defined in both vertex and fragment shaders. Default is undefined.
+	 */
+	defines: any;
+
+	/**
 	 * Which depth function to use. Default is {@link LessEqualDepth}. See the depth mode constants for all possible values.
 	 */
 	depthFunc: DepthModes;
@@ -145,15 +158,45 @@ export class Material extends EventDispatcher {
 	id: number;
 
 	/**
+   * Whether rendering this material has any effect on the stencil buffer. Default is *false*.
+   */
+	stencilWrite: boolean;
+
+	/**
+   * The stencil comparison function to use. Default is {@link AlwaysStencilFunc}. See stencil operation constants for all possible values.
+   */
+	stencilFunc: StencilFunc;
+
+	/**
+   * The value to use when performing stencil comparisons or stencil operations. Default is *0*.
+   */
+	stencilRef: number;
+
+	/**
+   * The bit mask to use when comparing against or writing to the stencil buffer. Default is *0xFF*.
+   */
+	stencilMask: number;
+
+	/**
+   * Which stencil operation to perform when the comparison function returns false. Default is {@link KeepStencilOp}. See the stencil operation constants for all possible values.
+   */
+	stencilFail: StencilOp;
+
+	/**
+   * Which stencil operation to perform when the comparison function returns true but the depth test fails. Default is {@link KeepStencilOp}. See the stencil operation constants for all possible values.
+   */
+	stencilZFail: StencilOp;
+
+	/**
+   * Which stencil operation to perform when the comparison function returns true and the depth test passes. Default is {@link KeepStencilOp}. See the stencil operation constants for all possible values.
+   */
+	stencilZPass: StencilOp;
+
+	/**
 	 * Used to check whether this or derived classes are materials. Default is true.
 	 * You should not change this, as it used internally for optimisation.
 	 */
-	isMaterial: boolean;
-
-	/**
-	 * Whether the material is affected by lights. Default is true.
-	 */
-	lights: boolean;
+	readonly isMaterial: true;
 
 	/**
 	 * Material name. Default is an empty string.
@@ -170,11 +213,6 @@ export class Material extends EventDispatcher {
 	 * Opacity. Default is 1.
 	 */
 	opacity: number;
-
-	/**
-	 * Enables/disables overdraw. If greater than zero, polygons are drawn slightly bigger in order to fix antialiasing gaps when using the CanvasRenderer. Default is 0.
-	 */
-	overdraw: number;
 
 	/**
 	 * Whether to use polygon offset. Default is false. This corresponds to the POLYGON_OFFSET_FILL WebGL feature.
@@ -218,6 +256,18 @@ export class Material extends EventDispatcher {
 	side: Side;
 
 	/**
+	 * Defines which of the face sides will cast shadows. Default is *null*.
+	 * If *null*, the value is opposite that of side, above.
+	 */
+	shadowSide: Side;
+
+	/**
+	 * Defines whether this material is tone mapped according to the renderer's toneMapping setting.
+	 * Default is true.
+	 */
+	toneMapped: boolean;
+
+	/**
 	 * Defines whether this material is transparent. This has an effect on rendering as transparent objects need special treatment and are rendered after non-transparent objects.
 	 * When set to true, the extent to which the material is transparent is controlled by setting it's .opacity property.
 	 * Default is false.
@@ -235,14 +285,9 @@ export class Material extends EventDispatcher {
 	uuid: string;
 
 	/**
-	 * Defines whether vertex coloring is used. Default is THREE.NoColors. Other options are THREE.VertexColors and THREE.FaceColors.
+	 * Defines whether vertex coloring is used. Default is false.
 	 */
-	vertexColors: Colors;
-
-	/**
-	 * Defines whether precomputed vertex tangents are used. Default is false.
-	 */
-	vertexTangents: boolean;
+	vertexColors: boolean;
 
 	/**
 	 * Defines whether this material is visible. Default is true.
@@ -253,6 +298,11 @@ export class Material extends EventDispatcher {
 	 * An object that can be used to store custom data about the Material. It should not hold references to functions as these will not be cloned.
 	 */
 	userData: any;
+
+	/**
+	 * This starts at 0 and counts how many times .needsUpdate is set to true.
+	 */
+	version: number;
 
 	/**
 	 * Return a new material with the same parameters as this material.
@@ -278,6 +328,11 @@ export class Material extends EventDispatcher {
 	onBeforeCompile ( shader : Shader, renderer : WebGLRenderer ) : void;
 
 	/**
+	 * In case onBeforeCompile is used, this callback can be used to identify values of settings used in onBeforeCompile, so three.js can reuse a cached shader or recompile the shader as needed.
+	 */
+	customProgramCacheKey(): string;
+
+	/**
 	 * Sets the properties based on the values.
 	 * @param values A container with parameters.
 	 */
@@ -288,10 +343,5 @@ export class Material extends EventDispatcher {
 	 * @param meta Object containing metadata such as textures or images for the material.
 	 */
 	toJSON( meta?: any ): any;
-
-	/**
-	 * Call .dispatchEvent ( { type: 'update' }) on the material.
-	 */
-	update(): void;
 
 }

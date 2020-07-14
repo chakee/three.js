@@ -156,13 +156,9 @@
 
 								var mixer = startAnimation( clonedMesh, model.animations, u.animationName );
 
-								if ( mixer ) {
-
-									// Save the animation mixer in the list, will need it in the animation loop
-									mixers.push( mixer );
-									numSuccess ++;
-
-								}
+								// Save the animation mixer in the list, will need it in the animation loop
+								mixers.push( mixer );
+								numSuccess ++;
 
 							}
 
@@ -281,7 +277,7 @@
 
 					console.log( "Done loading model", model.name );
 
-					onLoaded( model );
+					onLoaded();
 
 				} );
 
@@ -324,8 +320,7 @@
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.gammaOutput = true;
-				renderer.gammaFactor = 2.2;
+				renderer.outputEncoding = THREE.sRGBEncoding;
 				renderer.shadowMap.enabled = true;
 				renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 				container.appendChild( renderer.domElement );

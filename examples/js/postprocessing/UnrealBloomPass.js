@@ -1,10 +1,17 @@
+console.warn( "THREE.UnrealBloomPass: As part of the transition to ES6 Modules, the files in 'examples/js' were deprecated in May 2020 (r117) and will be deleted in December 2020 (r124). You can find more information about developing using ES6 Modules in https://threejs.org/docs/index.html#manual/en/introduction/Import-via-modules." );
 /**
  * @author spidersharma / http://eduperiment.com/
- *
- * Inspired from Unreal Engine
- * https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/Bloom/
  */
 
+/**
+ * UnrealBloomPass is inspired by the bloom pass of Unreal Engine. It creates a
+ * mip map chain of bloom textures and blurs them with different radii. Because
+ * of the weighted combination of mips, and because larger blurs are done on
+ * higher mips, this effect provides good quality and performance.
+ *
+ * Reference:
+ * - https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/Bloom/
+ */
 THREE.UnrealBloomPass = function ( resolution, strength, radius, threshold ) {
 
 	THREE.Pass.call( this );
@@ -190,7 +197,7 @@ THREE.UnrealBloomPass.prototype = Object.assign( Object.create( THREE.Pass.proto
 
 		renderer.setClearColor( this.clearColor, 0 );
 
-		if ( maskActive ) renderer.context.disable( renderer.context.STENCIL_TEST );
+		if ( maskActive ) renderer.state.buffers.stencil.setTest( false );
 
 		// Render input to screen
 
@@ -255,8 +262,7 @@ THREE.UnrealBloomPass.prototype = Object.assign( Object.create( THREE.Pass.proto
 		this.fsQuad.material = this.materialCopy;
 		this.copyUniforms[ "tDiffuse" ].value = this.renderTargetsHorizontal[ 0 ].texture;
 
-		if ( maskActive ) renderer.context.enable( renderer.context.STENCIL_TEST );
-
+		if ( maskActive ) renderer.state.buffers.stencil.setTest( true );
 
 		if ( this.renderToScreen ) {
 

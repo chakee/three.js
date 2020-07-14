@@ -9,7 +9,7 @@
 	<body>
 
 		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl - PVR compressed textures
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl - PVR compressed textures
 		</div>
 
 		<script type="module">
@@ -47,7 +47,7 @@
 				var onCube2Loaded = function ( texture ) {
 
 					texture.magFilter = THREE.LinearFilter;
-					// texture.minFilter = LinearMipMapNearestFilter;
+					// texture.minFilter = LinearMipmapNearestFilter;
 					texture.minFilter = THREE.LinearFilter;
 					texture.mapping = THREE.CubeReflectionMapping;
 					material8.needsUpdate = true;

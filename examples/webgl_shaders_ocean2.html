@@ -7,7 +7,7 @@
 	</head>
 	<body>
 		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl ocean simulation
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl ocean simulation
 		</div>
 
 		<script type="module">
@@ -36,9 +36,6 @@
 
 					this.ms_Renderer = new THREE.WebGLRenderer();
 					this.ms_Renderer.setPixelRatio( window.devicePixelRatio );
-					this.ms_Renderer.context.getExtension( 'OES_texture_float' );
-					this.ms_Renderer.context.getExtension( 'OES_texture_float_linear' );
-
 					document.body.appendChild( this.ms_Renderer.domElement );
 
 					this.ms_Scene = new THREE.Scene();

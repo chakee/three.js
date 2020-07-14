@@ -3,6 +3,8 @@
  * Developed as part of a project at University of Applied Sciences and Arts Northwestern Switzerland (www.fhnw.ch)
  */
 
+import { Command } from '../Command.js';
+
 /**
  * @param editor Editor
  * @param object THREE.Object3D
@@ -11,8 +13,7 @@
  * @param newValue string, object
  * @constructor
  */
-
-var SetScriptValueCommand = function ( editor, object, script, attributeName, newValue ) {
+function SetScriptValueCommand( editor, object, script, attributeName, newValue ) {
 
 	Command.call( this, editor );
 
@@ -27,7 +28,7 @@ var SetScriptValueCommand = function ( editor, object, script, attributeName, ne
 	this.oldValue = ( script !== undefined ) ? script[ this.attributeName ] : undefined;
 	this.newValue = newValue;
 
-};
+}
 
 SetScriptValueCommand.prototype = {
 
@@ -80,3 +81,5 @@ SetScriptValueCommand.prototype = {
 	}
 
 };
+
+export { SetScriptValueCommand };
